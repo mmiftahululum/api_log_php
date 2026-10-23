@@ -4,53 +4,103 @@ session_start();
 $password_rahasia = 'logMifpro'; // Ganti dengan password yang diinginkan
 
 if (isset($_POST['password'])) {
-    if ($_POST['password'] === $password_rahasia) {
-        $_SESSION['logged_in'] = true;
-        header("Location: index.php");
-        exit;
-    } else {
-        $error = "Password salah!";
-    }
+  if ($_POST['password'] === $password_rahasia) {
+    $_SESSION['logged_in'] = true;
+    header("Location: index.php");
+    exit;
+  } else {
+    $error = "Password salah!";
+  }
 }
 
 if (isset($_GET['logout'])) {
-    session_destroy();
-    header("Location: index.php");
-    exit;
+  session_destroy();
+  header("Location: index.php");
+  exit;
 }
 
 if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
-?>
-<!DOCTYPE html>
-<html>
-<head>
+  ?>
+  <!DOCTYPE html>
+  <html>
+
+  <head>
     <title>Login - API Logs</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-box { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; width: 100%; max-width: 300px; }
-        input[type="password"] { width: 100%; padding: 10px; margin: 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; width: 100%; font-size: 16px; }
-        button:hover { background: #2980b9; }
-        .error { color: #e74c3c; margin-top: 10px; font-size: 14px; }
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+
+      .login-box {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin: 15px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+
+      button {
+        background: #3498db;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background: #2980b9;
+      }
+
+      .error {
+        color: #e74c3c;
+        margin-top: 10px;
+        font-size: 14px;
+      }
     </style>
-</head>
-<body>
+
+    <link rel="icon" type="image/x-icon" href="https://log.mifpro.com/log.ico">
+  </head>
+
+  <body>
     <div class="login-box">
-        <h2>🔒 Login Akses</h2>
-        <form method="POST">
-            <input type="password" name="password" placeholder="Masukkan Password" required>
-            <button type="submit">Login</button>
-        </form>
-        <?php if(isset($error)) echo "<p class='error'>$error</p>"; ?>
+      <h2>🔒 Login Akses</h2>
+      <form method="POST">
+        <input type="password" name="password" placeholder="Masukkan Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <?php if (isset($error))
+        echo "<p class='error'>$error</p>"; ?>
     </div>
-</body>
-</html>
-<?php
-    exit;
+  </body>
+
+  </html>
+  <?php
+  exit;
 }
 ?>
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <title>API Logs Dashboard</title>
@@ -72,7 +122,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
       background: white;
       padding: 16px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
       margin-bottom: 20px;
     }
 
@@ -188,10 +238,11 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
       background: white;
       border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px 10px;
       border-bottom: 1px solid #eee;
       text-align: left;
@@ -229,7 +280,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
       background: white;
       padding: 12px 16px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
     }
 
     .pagination-nav {
@@ -308,7 +359,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
       background: white;
       border: 1px solid #ccc;
       border-radius: 0 0 6px 6px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       z-index: 100;
       box-sizing: border-box;
     }
@@ -328,7 +379,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 </head>
 
 <body>
-    
+
   <!-- MODAL JSON VIEWER -->
   <div id="modal" style="
     display:none;
@@ -360,9 +411,11 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         justify-content:space-between;
         align-items:center;
       ">
-        <button onclick="copyModal()" style="padding: 5px 10px; background:#3498db; color:white; border:none; border-radius:4px; cursor:pointer;">Copy</button>
+        <button onclick="copyModal()"
+          style="padding: 5px 10px; background:#3498db; color:white; border:none; border-radius:4px; cursor:pointer;">Copy</button>
         <span>JSON Viewer</span>
-        <button onclick="closeModal()" style="padding: 5px 10px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">Close</button>
+        <button onclick="closeModal()"
+          style="padding: 5px 10px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer;">Close</button>
       </div>
 
       <!-- CONTENT -->
@@ -371,7 +424,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         overflow:hidden;
         padding:15px;
       ">
-       <pre id="modalContent" style="
+        <pre id="modalContent" style="
             color:#00ff90;
             font-family:monospace;
             font-size:13px;
@@ -385,7 +438,7 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
       </div>
     </div>
   </div>
-    
+
   <!-- LOADING INDICATOR -->
   <div id="loading" style="
     display:none;
@@ -412,7 +465,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
   <h2 style="display: flex; justify-content: space-between; align-items: center;">
     <span>📊 API Logs Dashboard</span>
-    <a href="?logout=true" style="font-size: 14px; padding: 6px 14px; background: #e74c3c; color: white; text-decoration: none; border-radius: 5px; font-weight: normal;">Logout</a>
+    <a href="?logout=true"
+      style="font-size: 14px; padding: 6px 14px; background: #e74c3c; color: white; text-decoration: none; border-radius: 5px; font-weight: normal;">Logout</a>
   </h2>
 
   <!-- FILTER PANEL -->
@@ -431,7 +485,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
 
       <div class="filter-group" style="position: relative; flex: 1; min-width: 250px;">
         <label for="apiSearch">🔗 API URL</label>
-        <input type="text" id="apiSearch" placeholder="Ketik minimal 3 huruf untuk autocomplete..." style="width: 100%;">
+        <input type="text" id="apiSearch" placeholder="Ketik minimal 3 huruf untuk autocomplete..."
+          style="width: 100%;">
         <div id="suggestions" style="display: none;"></div>
       </div>
     </div>
@@ -442,9 +497,12 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         <label for="requestSearch">
           <span>📥 Search Request (LIKE)</span>
           <span class="chip-container">
-            <button type="button" class="btn-chip" onclick="applyWildcard('requestSearch', 'both')" title="Bungkus dengan % (%kata%)">%...%</button>
-            <button type="button" class="btn-chip" onclick="applyWildcard('requestSearch', 'start')" title="Tambah % di depan (%kata)">%...</button>
-            <button type="button" class="btn-chip" onclick="applyWildcard('requestSearch', 'end')" title="Tambah % di belakang (kata%)">...%</button>
+            <button type="button" class="btn-chip" onclick="applyWildcard('requestSearch', 'both')"
+              title="Bungkus dengan % (%kata%)">%...%</button>
+            <button type="button" class="btn-chip" onclick="applyWildcard('requestSearch', 'start')"
+              title="Tambah % di depan (%kata)">%...</button>
+            <button type="button" class="btn-chip" onclick="applyWildcard('requestSearch', 'end')"
+              title="Tambah % di belakang (kata%)">...%</button>
           </span>
         </label>
         <input type="text" id="requestSearch" placeholder="Cth: %user% atau user% atau %user" style="width: 100%;">
@@ -454,9 +512,12 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         <label for="responseSearch">
           <span>📤 Search Response (LIKE)</span>
           <span class="chip-container">
-            <button type="button" class="btn-chip" onclick="applyWildcard('responseSearch', 'both')" title="Bungkus dengan % (%kata%)">%...%</button>
-            <button type="button" class="btn-chip" onclick="applyWildcard('responseSearch', 'start')" title="Tambah % di depan (%kata)">%...</button>
-            <button type="button" class="btn-chip" onclick="applyWildcard('responseSearch', 'end')" title="Tambah % di belakang (kata%)">...%</button>
+            <button type="button" class="btn-chip" onclick="applyWildcard('responseSearch', 'both')"
+              title="Bungkus dengan % (%kata%)">%...%</button>
+            <button type="button" class="btn-chip" onclick="applyWildcard('responseSearch', 'start')"
+              title="Tambah % di depan (%kata)">%...</button>
+            <button type="button" class="btn-chip" onclick="applyWildcard('responseSearch', 'end')"
+              title="Tambah % di belakang (kata%)">...%</button>
           </span>
         </label>
         <input type="text" id="responseSearch" placeholder="Cth: %200% atau %sukses%" style="width: 100%;">
@@ -469,7 +530,8 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     </div>
 
     <div class="filter-note">
-      💡 <b>Tips LIKE:</b> Anda dapat mengetik simbol <code>%</code> langsung di form Request / Response (di awal, di akhir, atau dua-duanya), atau klik tombol bantuan <code>%...%</code>, <code>%...</code>, <code>...%</code>.
+      💡 <b>Tips LIKE:</b> Anda dapat mengetik simbol <code>%</code> langsung di form Request / Response (di awal, di
+      akhir, atau dua-duanya), atau klik tombol bantuan <code>%...%</code>, <code>%...</code>, <code>...%</code>.
     </div>
   </div>
 
@@ -504,81 +566,81 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     </div>
   </div>
 
-<script>
-let currentPage = 1;
-let totalPage = 1;
-const limit = 10;
+  <script>
+    let currentPage = 1;
+    let totalPage = 1;
+    const limit = 10;
 
-// ================= LOAD DATA =================
-async function loadData() {
-  showLoading();
+    // ================= LOAD DATA =================
+    async function loadData() {
+      showLoading();
 
-  try {
-    const startDate = document.getElementById("startDate").value;
-    const endDate = document.getElementById("endDate").value;
-    const api = document.getElementById("apiSearch").value.trim();
-    const requestVal = document.getElementById("requestSearch").value.trim();
-    const responseVal = document.getElementById("responseSearch").value.trim();
+      try {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const api = document.getElementById("apiSearch").value.trim();
+        const requestVal = document.getElementById("requestSearch").value.trim();
+        const responseVal = document.getElementById("responseSearch").value.trim();
 
-    const params = new URLSearchParams({
-      page: currentPage,
-      limit: limit,
-      start_date: startDate,
-      end_date: endDate,
-      api: api,
-      request: requestVal,
-      response: responseVal
-    });
+        const params = new URLSearchParams({
+          page: currentPage,
+          limit: limit,
+          start_date: startDate,
+          end_date: endDate,
+          api: api,
+          request: requestVal,
+          response: responseVal
+        });
 
-    const res = await fetch(`get_logs.php?${params.toString()}`);
-    const result = await res.json();
+        const res = await fetch(`get_logs.php?${params.toString()}`);
+        const result = await res.json();
 
-    totalPage = result.total_page || 1;
-    currentPage = result.page || 1;
+        totalPage = result.total_page || 1;
+        currentPage = result.page || 1;
 
-    renderTable(result.data || []);
+        renderTable(result.data || []);
 
-    document.getElementById("pageInfo").innerHTML =
-      `Halaman <b>${currentPage}</b> dari <b>${totalPage}</b> (Total: <b>${(result.total || 0).toLocaleString()}</b> data)`;
+        document.getElementById("pageInfo").innerHTML =
+          `Halaman <b>${currentPage}</b> dari <b>${totalPage}</b> (Total: <b>${(result.total || 0).toLocaleString()}</b> data)`;
 
-    // Update form lompat halaman
-    const jumpInput = document.getElementById("jumpPageInput");
-    jumpInput.value = currentPage;
-    jumpInput.max = totalPage;
+        // Update form lompat halaman
+        const jumpInput = document.getElementById("jumpPageInput");
+        jumpInput.value = currentPage;
+        jumpInput.max = totalPage;
 
-    // Disabled states tombol navigasi
-    document.getElementById("btnFirst").disabled = (currentPage <= 1);
-    document.getElementById("btnPrev").disabled = (currentPage <= 1);
-    document.getElementById("btnNext").disabled = (currentPage >= totalPage);
-    document.getElementById("btnLast").disabled = (currentPage >= totalPage);
+        // Disabled states tombol navigasi
+        document.getElementById("btnFirst").disabled = (currentPage <= 1);
+        document.getElementById("btnPrev").disabled = (currentPage <= 1);
+        document.getElementById("btnNext").disabled = (currentPage >= totalPage);
+        document.getElementById("btnLast").disabled = (currentPage >= totalPage);
 
-  } catch (e) {
-    console.error(e);
-  } finally {
-    hideLoading();
-  }
-}
+      } catch (e) {
+        console.error(e);
+      } finally {
+        hideLoading();
+      }
+    }
 
-// ================= RENDER =================
-function renderTable(data) {
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = "";
+    // ================= RENDER =================
+    function renderTable(data) {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
 
-  if (!data || data.length === 0) {
-    tbody.innerHTML = `
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `
       <tr>
         <td colspan="4" style="text-align: center; padding: 30px; color: #7f8c8d;">
           Tidak ada data log yang sesuai dengan filter.
         </td>
       </tr>
     `;
-    return;
-  }
+        return;
+      }
 
-  data.forEach(log => {
-    const tr = document.createElement("tr");
+      data.forEach(log => {
+        const tr = document.createElement("tr");
 
-    tr.innerHTML = `
+        tr.innerHTML = `
       <td>${log.created_at}</td>
       <td style="word-break: break-all; font-weight: 500;">${log.api_url}</td>
       <td>
@@ -595,224 +657,225 @@ function renderTable(data) {
       </td>
     `;
 
-    tbody.appendChild(tr);
-  });
-}
-
-// ================= FILTER & SEARCH =================
-function filterData() {
-  currentPage = 1;
-  loadData();
-}
-
-function resetFilter() {
-  document.getElementById("startDate").value = "";
-  document.getElementById("endDate").value = "";
-  document.getElementById("apiSearch").value = "";
-  document.getElementById("requestSearch").value = "";
-  document.getElementById("responseSearch").value = "";
-  currentPage = 1;
-  loadData();
-}
-
-// Terapkan wildcard % ke input form ("nempel di form")
-function applyWildcard(inputId, mode) {
-  const input = document.getElementById(inputId);
-  let val = input.value.trim();
-
-  // Hapus % terluar jika sudah ada untuk diganti mode baru
-  val = val.replace(/^%+/, '').replace(/%+$/, '');
-
-  if (!val) {
-    if (mode === 'both') input.value = '%%';
-    else if (mode === 'start') input.value = '%';
-    else if (mode === 'end') input.value = '%';
-    input.focus();
-    if (mode === 'both') {
-      input.setSelectionRange(1, 1);
+        tbody.appendChild(tr);
+      });
     }
-    return;
-  }
 
-  if (mode === 'both') {
-    input.value = `%${val}%`;
-  } else if (mode === 'start') {
-    input.value = `%${val}`;
-  } else if (mode === 'end') {
-    input.value = `${val}%`;
-  }
+    // ================= FILTER & SEARCH =================
+    function filterData() {
+      currentPage = 1;
+      loadData();
+    }
 
-  input.focus();
-  filterData();
-}
+    function resetFilter() {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      document.getElementById("apiSearch").value = "";
+      document.getElementById("requestSearch").value = "";
+      document.getElementById("responseSearch").value = "";
+      currentPage = 1;
+      loadData();
+    }
 
-// Trigger cari ketika tekan Enter pada input filter
-["requestSearch", "responseSearch", "apiSearch", "startDate", "endDate"].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) {
-    el.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        filterData();
+    // Terapkan wildcard % ke input form ("nempel di form")
+    function applyWildcard(inputId, mode) {
+      const input = document.getElementById(inputId);
+      let val = input.value.trim();
+
+      // Hapus % terluar jika sudah ada untuk diganti mode baru
+      val = val.replace(/^%+/, '').replace(/%+$/, '');
+
+      if (!val) {
+        if (mode === 'both') input.value = '%%';
+        else if (mode === 'start') input.value = '%';
+        else if (mode === 'end') input.value = '%';
+        input.focus();
+        if (mode === 'both') {
+          input.setSelectionRange(1, 1);
+        }
+        return;
+      }
+
+      if (mode === 'both') {
+        input.value = `%${val}%`;
+      } else if (mode === 'start') {
+        input.value = `%${val}`;
+      } else if (mode === 'end') {
+        input.value = `${val}%`;
+      }
+
+      input.focus();
+      filterData();
+    }
+
+    // Trigger cari ketika tekan Enter pada input filter
+    ["requestSearch", "responseSearch", "apiSearch", "startDate", "endDate"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            filterData();
+          }
+        });
       }
     });
-  }
-});
 
-// ================= PAGINATION =================
-function nextPage() {
-  if (currentPage < totalPage) {
-    currentPage++;
-    loadData();
-  }
-}
-
-function prevPage() {
-  if (currentPage > 1) {
-    currentPage--;
-    loadData();
-  }
-}
-
-function firstPage() {
-  if (currentPage > 1) {
-    currentPage = 1;
-    loadData();
-  }
-}
-
-function lastPage() {
-  if (currentPage < totalPage) {
-    currentPage = totalPage;
-    loadData();
-  }
-}
-
-// Lompat langsung ke halaman yang diinginkan
-function jumpToPage() {
-  const input = document.getElementById("jumpPageInput");
-  const target = parseInt(input.value);
-
-  if (isNaN(target) || target < 1) {
-    alert("Masukkan nomor halaman yang valid (minimal 1)");
-    return;
-  }
-
-  if (target > totalPage) {
-    alert(`Nomor halaman melebihi total halaman (${totalPage})`);
-    return;
-  }
-
-  currentPage = target;
-  loadData();
-}
-
-// Tekan Enter pada input lompat halaman
-document.getElementById("jumpPageInput").addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    jumpToPage();
-  }
-});
-
-// ================= AUTOCOMPLETE API =================
-document.getElementById("apiSearch").addEventListener("input", async function () {
-  const val = this.value.trim();
-  const box = document.getElementById("suggestions");
-
-  // Minimal 3 huruf
-  if (val.length < 3) {
-    box.innerHTML = "";
-    box.style.display = "none";
-    return;
-  }
-
-  box.style.display = "block";
-  box.innerHTML = "<div style='color: #7f8c8d; padding: 8px;'>Memuat rekomendasi...</div>";
-
-  try {
-    const res = await fetch(`get_api_list.php?q=${encodeURIComponent(val)}`);
-    const data = await res.json();
-
-    box.innerHTML = "";
-
-    if (!data || data.length === 0) {
-      box.innerHTML = "<div style='color: #7f8c8d; padding: 8px;'>Tidak ditemukan</div>";
-      return;
+    // ================= PAGINATION =================
+    function nextPage() {
+      if (currentPage < totalPage) {
+        currentPage++;
+        loadData();
+      }
     }
 
-    data.forEach(api => {
-      const div = document.createElement("div");
-      div.textContent = api;
+    function prevPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        loadData();
+      }
+    }
 
-      div.onclick = () => {
-        document.getElementById("apiSearch").value = api;
-        box.innerHTML = "";
-        box.style.display = "none";
-        filterData();
-      };
+    function firstPage() {
+      if (currentPage > 1) {
+        currentPage = 1;
+        loadData();
+      }
+    }
 
-      box.appendChild(div);
+    function lastPage() {
+      if (currentPage < totalPage) {
+        currentPage = totalPage;
+        loadData();
+      }
+    }
+
+    // Lompat langsung ke halaman yang diinginkan
+    function jumpToPage() {
+      const input = document.getElementById("jumpPageInput");
+      const target = parseInt(input.value);
+
+      if (isNaN(target) || target < 1) {
+        alert("Masukkan nomor halaman yang valid (minimal 1)");
+        return;
+      }
+
+      if (target > totalPage) {
+        alert(`Nomor halaman melebihi total halaman (${totalPage})`);
+        return;
+      }
+
+      currentPage = target;
+      loadData();
+    }
+
+    // Tekan Enter pada input lompat halaman
+    document.getElementById("jumpPageInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        jumpToPage();
+      }
     });
 
-  } catch (e) {
-    box.innerHTML = "<div style='color: #e74c3c; padding: 8px;'>Gagal memuat rekomendasi</div>";
-  }
-});
+    // ================= AUTOCOMPLETE API =================
+    document.getElementById("apiSearch").addEventListener("input", async function () {
+      const val = this.value.trim();
+      const box = document.getElementById("suggestions");
 
-document.addEventListener("click", function (e) {
-  const box = document.getElementById("suggestions");
-  const input = document.getElementById("apiSearch");
+      // Minimal 3 huruf
+      if (val.length < 3) {
+        box.innerHTML = "";
+        box.style.display = "none";
+        return;
+      }
 
-  if (!input.contains(e.target) && !box.contains(e.target)) {
-    box.style.display = "none";
-  }
-});
+      box.style.display = "block";
+      box.innerHTML = "<div style='color: #7f8c8d; padding: 8px;'>Memuat rekomendasi...</div>";
 
-// ================= LOADING =================
-function showLoading() {
-  document.getElementById("loading").style.display = "flex";
-}
+      try {
+        const res = await fetch(`get_api_list.php?q=${encodeURIComponent(val)}`);
+        const data = await res.json();
 
-function hideLoading() {
-  document.getElementById("loading").style.display = "none";
-}
+        box.innerHTML = "";
 
-// ================= MODAL & COPY =================
-function copyText(text) {
-  const decoded = decodeURIComponent(text);
+        if (!data || data.length === 0) {
+          box.innerHTML = "<div style='color: #7f8c8d; padding: 8px;'>Tidak ditemukan</div>";
+          return;
+        }
 
-  navigator.clipboard.writeText(decoded)
-    .then(() => alert("Berhasil disalin ke clipboard!"))
-    .catch(err => console.error(err));
-}
+        data.forEach(api => {
+          const div = document.createElement("div");
+          div.textContent = api;
 
-function openModal(text) {
-  const decoded = decodeURIComponent(text);
+          div.onclick = () => {
+            document.getElementById("apiSearch").value = api;
+            box.innerHTML = "";
+            box.style.display = "none";
+            filterData();
+          };
 
-  let formatted;
-  try {
-    formatted = JSON.stringify(JSON.parse(decoded), null, 2);
-  } catch (e) {
-    formatted = decoded;
-  }
+          box.appendChild(div);
+        });
 
-  document.getElementById("modalContent").innerText = formatted;
-  document.getElementById("modal").style.display = "flex";
-}
+      } catch (e) {
+        box.innerHTML = "<div style='color: #e74c3c; padding: 8px;'>Gagal memuat rekomendasi</div>";
+      }
+    });
 
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
-}
+    document.addEventListener("click", function (e) {
+      const box = document.getElementById("suggestions");
+      const input = document.getElementById("apiSearch");
 
-function copyModal() {
-  const text = document.getElementById("modalContent").innerText;
+      if (!input.contains(e.target) && !box.contains(e.target)) {
+        box.style.display = "none";
+      }
+    });
 
-  navigator.clipboard.writeText(text)
-    .then(() => alert("Berhasil menyalin JSON modal!"));
-}
+    // ================= LOADING =================
+    function showLoading() {
+      document.getElementById("loading").style.display = "flex";
+    }
 
-// ================= INIT =================
-loadData();
-</script>
+    function hideLoading() {
+      document.getElementById("loading").style.display = "none";
+    }
+
+    // ================= MODAL & COPY =================
+    function copyText(text) {
+      const decoded = decodeURIComponent(text);
+
+      navigator.clipboard.writeText(decoded)
+        .then(() => alert("Berhasil disalin ke clipboard!"))
+        .catch(err => console.error(err));
+    }
+
+    function openModal(text) {
+      const decoded = decodeURIComponent(text);
+
+      let formatted;
+      try {
+        formatted = JSON.stringify(JSON.parse(decoded), null, 2);
+      } catch (e) {
+        formatted = decoded;
+      }
+
+      document.getElementById("modalContent").innerText = formatted;
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    function copyModal() {
+      const text = document.getElementById("modalContent").innerText;
+
+      navigator.clipboard.writeText(text)
+        .then(() => alert("Berhasil menyalin JSON modal!"));
+    }
+
+    // ================= INIT =================
+    loadData();
+  </script>
 
 </body>
+
 </html>
