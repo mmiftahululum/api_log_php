@@ -2,25 +2,32 @@
 header("Content-Type: application/json");
 date_default_timezone_set('Asia/Jakarta');
 
-require_once "db.php";
+require_once __DIR__ . '/src/db.php';
+require_once __DIR__ . '/src/auth.php';
+
+// Wajib header `mifpro-token` yang valid
+$account = require_account($conn);
+$accountId = (int) $account['id'];
 
 // ambil parameter
-$page  = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-if ($page < 1) $page = 1;
-if ($limit < 1) $limit = 10;
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+$limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+if ($page < 1)
+    $page = 1;
+if ($limit < 1)
+    $limit = 10;
 
-$search    = $_GET['search'] ?? '';
-$api       = $_GET['api'] ?? '';
-$request   = $_GET['request'] ?? '';
-$response  = $_GET['response'] ?? '';
+$search = $_GET['search'] ?? '';
+$api = $_GET['api'] ?? '';
+$request = $_GET['request'] ?? '';
+$response = $_GET['response'] ?? '';
 $startDate = $_GET['start_date'] ?? '';
-$endDate   = $_GET['end_date'] ?? '';
+$endDate = $_GET['end_date'] ?? '';
 
 $offset = ($page - 1) * $limit;
 
-// query dasar
-$where = "WHERE 1=1";
+// query dasar — selalu dibatasi ke akun pemilik token
+$where = "WHERE account_id = $accountId";
 
 // 1. Filter Tanggal (Asia/Jakarta timezone)
 if (!empty($startDate) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate)) {
@@ -63,7 +70,7 @@ if (!empty($search)) {
 
 // ambil total data
 $totalQuery = $conn->query("SELECT COUNT(*) as total FROM api_logs $where");
-$total = $totalQuery ? (int)($totalQuery->fetch_assoc()['total'] ?? 0) : 0;
+$total = $totalQuery ? (int) ($totalQuery->fetch_assoc()['total'] ?? 0) : 0;
 
 // ambil data paginated
 $query = "
@@ -96,7 +103,7 @@ echo json_encode([
     "page" => $page,
     "limit" => $limit,
     "total" => $total,
-    "total_page" => max(1, (int)ceil($total / $limit))
+    "total_page" => max(1, (int) ceil($total / $limit))
 ]);
 
 $conn->close();

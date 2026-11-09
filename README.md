@@ -4,6 +4,36 @@ Aplikasi pencatatan log API berbasis PHP native & MySQL yang dilengkapi dengan d
 
 ---
 
+## 📁 Struktur Project
+
+```
+private_logApi/
+├── .env                  # Kredensial lokal (TIDAK di-commit)
+├── .env.example          # Template konfigurasi (di-commit)
+├── .gitignore            # Mengabaikan .env, vendor, dll.
+├── .htaccess             # Proteksi file/folder sensitif
+├── config/
+│   └── config.php        # Loader .env + konfigurasi aplikasi
+├── src/
+│   ├── db.php            # Koneksi database (mysqli)
+│   └── auth.php          # Validasi header mifpro-token
+├── database/
+│   └── schema.sql        # Skema tabel accounts & api_logs
+├── index.php             # Dashboard + login Google
+├── docs.php              # Halaman dokumentasi API
+├── auth_google.php       # Verifikasi login Google
+├── log.php               # API simpan log (butuh mifpro-token)
+├── get_logs.php          # API ambil log (butuh mifpro-token)
+├── get_api_list.php      # API autocomplete (butuh mifpro-token)
+├── setup.php             # Installer database & tabel
+├── db.php / auth.php / google_config.php   # Shim kompatibilitas
+└── README.md
+```
+
+> 🔐 **Keamanan `.env`:** File `.env` berisi kredensial dan **tidak akan ter-commit** ke GitHub (lihat `.gitignore`). Di produksi, isi `.env` langsung di server atau set variabel environment. Variabel environment server **tidak akan ditimpa** oleh `.env`.
+
+---
+
 ## 🔑 1. Akses Dashboard Web
 
 ### URL Akses
@@ -21,12 +51,16 @@ Buka browser dan akses URL tempat aplikasi ini di-deploy, misalnya:
   https://domain-anda.com/path-ke-folder/index.php
   ```
 
-### Kredensial Login
-Form login dashboard diproteksi dengan password sederhana:
-- **Username:** *(Tidak diperlukan, form hanya meminta Password)*
-- **Password:** `logMifpro`
+### Login dengan Google
+Dashboard menggunakan **Google Sign-In** (Google Identity Services). Tidak ada password yang disimpan.
+- Klik tombol **Sign in with Google** pada halaman login.
+- Akun dibuat otomatis saat login pertama kali.
+- Setiap akun memiliki **`mifpro-token`** unik yang ditampilkan di header dashboard (tombol **Copy**).
 
-> 💡 *Catatan:* Password dapat diubah di baris ke-4 file [index.php](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_logApi/index.php) pada variabel `$password_rahasia`.
+> ⚙️ *Konfigurasi:* Isi `GOOGLE_CLIENT_ID` pada file `.env` (lihat `.env.example`). Tambahkan juga origin domain Anda di Google Cloud Console → OAuth consent screen → Authorized JavaScript origins.
+
+### Isolasi Data
+Semua log terikat ke `account_id` pemilik token. Akun **tidak dapat** membaca data akun lain.
 
 ---
 
@@ -37,6 +71,7 @@ Digunakan oleh aplikasi/backend lain untuk mengirim dan menyimpan data log Reque
 
 - **Method:** `POST`
 - **Endpoint:** `http://domain-anda/log.php`
+- **Header Wajib:** `mifpro-token: <token-akun-anda>`
 - **Content-Type:** `application/x-www-form-urlencoded` atau `multipart/form-data`
 - **Parameter Body:**
   | Parameter | Tipe | Wajib | Keterangan |
@@ -48,6 +83,7 @@ Digunakan oleh aplikasi/backend lain untuk mengirim dan menyimpan data log Reque
 #### Contoh Pemanggilan (cURL):
 ```bash
 curl -X POST "http://localhost/private_logApi/log.php" \
+  -H "mifpro-token: TOKEN_AKUN_ANDA" \
   -d "api_url=https://api.domain.com/v1/orders" \
   -d 'request={"order_id": 12345, "amount": 50000}' \
   -d 'response={"status": "success", "code": 200, "message": "Order created"}'
@@ -97,6 +133,7 @@ Digunakan untuk mengambil daftar log dengan pagination dan berbagai kriteria pen
 
 - **Method:** `GET`
 - **Endpoint:** `http://domain-anda/get_logs.php`
+- **Header Wajib:** `mifpro-token: <token-akun-anda>`
 - **Query Parameter:**
   | Parameter | Tipe | Contoh | Keterangan |
   |---|---|---|---|
@@ -139,6 +176,7 @@ Mengambil rekomendasi daftar `api_url` yang pernah tercatat di database.
 
 - **Method:** `GET`
 - **Endpoint:** `http://domain-anda/get_api_list.php?q=keyword`
+- **Header Wajib:** `mifpro-token: <token-akun-anda>`
 - **Parameter:** `q` (minimal 3 huruf)
 - **Response:** Array string API URL
 
@@ -190,32 +228,69 @@ Dashboard [index.php](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_
 
 ## 🗄️ 4. Setup & Pembuatan Database
 
-Konfigurasi koneksi MySQL terdapat pada file [db.php](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_logApi/db.php). Anda dapat membuat database dan tabel `api_logs` menggunakan salah satu dari 2 cara berikut:
+### Langkah 1: Siapkan `.env`
+Salin template lalu sesuaikan kredensial:
+```bash
+cp .env.example .env
+```
+Isi `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS`, dan `GOOGLE_CLIENT_ID`.
+Contoh lokal (MySQL root tanpa password):
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=private_log_api
+DB_USER=root
+DB_PASS=
+```
 
-### Cara 1: Installer Otomatis (Direkomendasikan)
-Telah disediakan script [setup.php](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_logApi/setup.php) yang otomatis membuat database dan tabel `api_logs`:
+### Langkah 2: Buat Database & Tabel
+**Cara 1 — Installer Otomatis (Direkomendasikan):**
+Script [setup.php](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_logApi/setup.php) membaca `.env`, membuat database, lalu membuat tabel `accounts` & `api_logs`:
 - **Lewat Browser:** Buka `http://localhost/private_logApi/setup.php`
 - **Lewat Terminal:**
   ```bash
   php setup.php
   ```
 
-### Cara 2: Import Manual via `database.sql`
-Gunakan file [database.sql](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_logApi/database.sql) melalui phpMyAdmin atau MySQL Command Line:
+**Cara 2 — Import Manual:**
+Buat database terlebih dahulu, lalu import [database/schema.sql](file:///c:/Users/MiftahulUlum/Development/WebPhp5/private_logApi/database/schema.sql):
 ```bash
-mysql -u root -p < database.sql
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS private_log_api CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+mysql -u root private_log_api < database/schema.sql
+```
+
+#### Skema Tabel `accounts`:
+```sql
+CREATE TABLE IF NOT EXISTS `accounts` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `google_id` VARCHAR(64) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) DEFAULT NULL,
+  `picture` VARCHAR(512) DEFAULT NULL,
+  `api_token` CHAR(64) NOT NULL COMMENT 'Token API (header mifpro-token)',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_login` TIMESTAMP NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_google_id` (`google_id`),
+  UNIQUE KEY `uq_email` (`email`),
+  UNIQUE KEY `uq_api_token` (`api_token`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 #### Skema Tabel `api_logs`:
 ```sql
 CREATE TABLE IF NOT EXISTS `api_logs` (
   `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `account_id` BIGINT(20) UNSIGNED NULL COMMENT 'Pemilik log',
   `api_url` VARCHAR(255) NOT NULL COMMENT 'Endpoint / URL API',
   `request_body` LONGTEXT DEFAULT NULL COMMENT 'Payload body request JSON/text',
   `response_body` LONGTEXT DEFAULT NULL COMMENT 'Response body JSON/text',
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Waktu log dicatat',
   PRIMARY KEY (`id`),
+  KEY `idx_account_id` (`account_id`),
   KEY `idx_created_at` (`created_at`),
-  KEY `idx_api_url` (`api_url`)
+  KEY `idx_api_url` (`api_url`),
+  CONSTRAINT `fk_logs_account` FOREIGN KEY (`account_id`)
+    REFERENCES `accounts` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```

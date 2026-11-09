@@ -1,0 +1,22 @@
+# ============================================
+# Proteksi file & folder sensitif (Apache)
+# ============================================
+
+# Blokir akses langsung ke .env
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+
+# Blokir file SQL / dokumentasi / lock
+<FilesMatch "\.(sql|md|lock|json)$">
+    Require all denied
+</FilesMatch>
+
+# Blokir folder internal
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(config|src|database)/ - [F,L]
+</IfModule>
+
+# Matikan directory listing
+Options -Indexes

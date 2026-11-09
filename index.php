@@ -1,17 +1,7 @@
 <?php
 session_start();
 
-$password_rahasia = 'logMifpro'; // Ganti dengan password yang diinginkan
-
-if (isset($_POST['password'])) {
-  if ($_POST['password'] === $password_rahasia) {
-    $_SESSION['logged_in'] = true;
-    header("Location: index.php");
-    exit;
-  } else {
-    $error = "Password salah!";
-  }
-}
+$config = require __DIR__ . '/config/config.php';
 
 if (isset($_GET['logout'])) {
   session_destroy();
@@ -19,12 +9,13 @@ if (isset($_GET['logout'])) {
   exit;
 }
 
-if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+if (!isset($_SESSION['account_id'])) {
   ?>
   <!DOCTYPE html>
   <html>
 
   <head>
+    <meta charset="UTF-8">
     <title>Login - API Logs</title>
     <style>
       body {
@@ -44,59 +35,82 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         text-align: center;
         width: 100%;
-        max-width: 300px;
+        max-width: 340px;
       }
 
-      input[type="password"] {
-        width: 100%;
-        padding: 10px;
-        margin: 15px 0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
+      .login-box h2 {
+        margin-top: 0;
+        color: #2c3e50;
       }
 
-      button {
-        background: #3498db;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        width: 100%;
-        font-size: 16px;
+      .sub {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 20px;
       }
 
-      button:hover {
-        background: #2980b9;
+      .g_id_signin {
+        display: flex;
+        justify-content: center;
       }
 
       .error {
         color: #e74c3c;
-        margin-top: 10px;
+        margin-top: 15px;
         font-size: 14px;
       }
     </style>
 
     <link rel="icon" type="image/x-icon" href="https://log.mifpro.com/log.ico">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
 
   <body>
     <div class="login-box">
-      <h2>🔒 Login Akses</h2>
-      <form method="POST">
-        <input type="password" name="password" placeholder="Masukkan Password" required>
-        <button type="submit">Login</button>
-      </form>
-      <?php if (isset($error))
-        echo "<p class='error'>$error</p>"; ?>
+      <h2>🔒 Login dengan Google</h2>
+      <p class="sub">Masuk untuk mengakses dashboard log API Anda.</p>
+
+      <div id="g_id_onload" data-client_id="<?= htmlspecialchars($config['google']['client_id']) ?>"
+        data-callback="handleCredentialResponse" data-auto_prompt="false"></div>
+      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="signin_with"
+        data-shape="rectangular" data-logo_alignment="left"></div>
+
+      <p id="loginError" class="error" style="display:none;"></p>
     </div>
+
+    <script>
+      function handleCredentialResponse(response) {
+        const form = new FormData();
+        form.append('credential', response.credential);
+
+        fetch('auth_google.php', { method: 'POST', body: form })
+          .then(r => r.json())
+          .then(res => {
+            if (res.status) {
+              window.location.href = res.redirect || 'index.php';
+            } else {
+              showError(res.message || 'Login gagal');
+            }
+          })
+          .catch(() => showError('Gagal menghubungi server'));
+      }
+
+      function showError(msg) {
+        const el = document.getElementById('loginError');
+        el.textContent = msg;
+        el.style.display = 'block';
+      }
+    </script>
   </body>
 
   </html>
   <?php
   exit;
 }
+
+$accountEmail = $_SESSION['email'] ?? '';
+$accountName = $_SESSION['name'] ?? '';
+$apiToken = $_SESSION['api_token'] ?? '';
 ?>
 <!DOCTYPE html>
 <html>
@@ -463,10 +477,24 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     </div>
   </div>
 
-  <h2 style="display: flex; justify-content: space-between; align-items: center;">
+  <h2 style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
     <span>📊 API Logs Dashboard</span>
-    <a href="?logout=true"
-      style="font-size: 14px; padding: 6px 14px; background: #e74c3c; color: white; text-decoration: none; border-radius: 5px; font-weight: normal;">Logout</a>
+    <span style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: normal;">
+      <span style="color: #2c3e50;">👤 <?= htmlspecialchars($accountEmail) ?></span>
+      <span
+        style="display: flex; align-items: center; gap: 6px; background: #eef2f7; border: 1px solid #cfd7df; border-radius: 5px; padding: 4px 8px;">
+        <span style="color: #64748b;">mifpro-token:</span>
+        <code id="apiToken"
+          style="font-family: monospace; color: #2c3e50; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"><?= htmlspecialchars($apiToken) ?></code>
+        <button onclick="copyToken()"
+          style="padding: 2px 8px; font-size: 11px; background: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer;">Copy</button>
+      </span>
+      <a href="docs.php"
+        style="padding: 6px 14px; background: #3498db; color: white; text-decoration: none; border-radius: 5px;">📖
+        Dokumentasi</a>
+      <a href="?logout=true"
+        style="padding: 6px 14px; background: #e74c3c; color: white; text-decoration: none; border-radius: 5px;">Logout</a>
+    </span>
   </h2>
 
   <!-- FILTER PANEL -->
@@ -567,6 +595,14 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
   </div>
 
   <script>
+    const API_TOKEN = <?= json_encode($apiToken) ?>;
+
+    function copyToken() {
+      navigator.clipboard.writeText(API_TOKEN)
+        .then(() => alert('Token berhasil disalin!'))
+        .catch(err => console.error(err));
+    }
+
     let currentPage = 1;
     let totalPage = 1;
     const limit = 10;
@@ -592,7 +628,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
           response: responseVal
         });
 
-        const res = await fetch(`get_logs.php?${params.toString()}`);
+        const res = await fetch(`get_logs.php?${params.toString()}`, {
+          headers: { 'mifpro-token': API_TOKEN }
+        });
         const result = await res.json();
 
         totalPage = result.total_page || 1;
@@ -791,7 +829,9 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
       box.innerHTML = "<div style='color: #7f8c8d; padding: 8px;'>Memuat rekomendasi...</div>";
 
       try {
-        const res = await fetch(`get_api_list.php?q=${encodeURIComponent(val)}`);
+        const res = await fetch(`get_api_list.php?q=${encodeURIComponent(val)}`, {
+          headers: { 'mifpro-token': API_TOKEN }
+        });
         const data = await res.json();
 
         box.innerHTML = "";
